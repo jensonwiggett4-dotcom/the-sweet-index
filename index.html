@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<!--
+  NOTE: this page currently has no ad placements — the earlier reserved
+  ad-slot banners have been removed. The cookie consent banner, the
+  Privacy/Cookie/Terms/About pages, and the "Advertising" consent category
+  are left in place since they're still useful general-purpose compliance
+  infrastructure (and cost nothing to keep), but nothing currently depends
+  on that category being granted.
+
+  If you want to add advertising back later (after self-hosting this on
+  your own domain, since claude.ai's artifact sandbox blocks Google's ad
+  domains): add a container where you want the ad, add Google's AdSense
+  script tag and an <ins class="adsbygoogle"> inside it, and only call
+  (adsbygoogle = window.adsbygoogle || []).push({}) once applyConsent()
+  confirms record.advertising is true. Also add an ads.txt file at your
+  domain root, e.g.: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+  -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sweet Index — 100+ Dessert Recipes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============ design tokens ============ */
+  :root{
+    --bg: #fdf8f3;
+    --surface: #ffffff;
+    --surface-2: #f6ede3;
+    --ink: #2c2420;
+    --ink-soft: #6b5d53;
+    --line: #e8ddd0;
+    --accent: #c1502e;
+    --accent-soft: #f3d9cd;
+    --accent-ink: #7a2f18;
+    --gold: #d9a441;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 9px;
+    --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+    --font-body: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --shadow-sm: 0 1px 2px rgba(44,36,32,0.06), 0 1px 1px rgba(44,36,32,0.04);
+    --shadow-md: 0 8px 24px -8px rgba(44,36,32,0.18);
+    --shadow-lg: 0 24px 60px -20px rgba(44,36,32,0.28);
+    color-scheme: light;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100%;
+  }
+  img,svg{ max-width:100%; display:block; }
+  a{ color:inherit; }
+  button{ font-family:inherit; }
+
+  /* ============ top bar ============ */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(253,248,243,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1180px; margin:0 auto; padding:16px 24px;
+    display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-display); font-weight:600; font-size:1.3rem;
+    letter-spacing:-0.01em; white-space:nowrap;
+  }
+  .brand-mark{
+    width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark svg{ width:20px; height:20px; }
+  .search-wrap{
+    flex:1 1 260px; min-width:200px; position:relative;
+  }
+  .search-wrap input{
+    width:100%; padding:11px 16px 11px 40px;
+    border-radius:999px; border:1px solid var(--line);
+    background:var(--surface); font-size:0.95rem; color:var(--ink);
+    outline:none; transition:border-color .15s, box-shadow .15s;
+  }
+  .search-wrap input:focus{
+    border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .search-wrap svg{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; color:var(--ink-soft); pointer-events:none;
+  }
+  .count-pill{
+    font-size:0.82rem; color:var(--ink-soft); white-space:nowrap;
+    background:var(--surface-2); padding:7px 14px; border-radius:999px;
+    font-weight:600;
+  }
+
+  /* ============ hero ============ */
+  .hero{
+    max-width:1180px; margin:0 auto; padding:52px 24px 8px;
+  }
+  .hero h1{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(2rem, 4.5vw, 3.1rem); line-height:1.04;
+    margin:0 0 14px; letter-spacing:-0.02em; text-wrap:balance;
+  }
+  .hero h1 em{ font-style:italic; color:var(--accent); }
+  .hero p{
+    font-size:1.08rem; color:var(--ink-soft); max-width:60ch; margin:0 0 28px; line-height:1.55;
+  }
+
+  /* ============ category chips ============ */
+  .chips{
+    display:flex; gap:9px; flex-wrap:wrap; padding:0 24px 28px;
+    max-width:1180px; margin:0 auto;
+  }
+  .chip{
+    border:1px solid var(--line); background:var(--surface);
+    color:var(--ink-soft); padding:9px 17px; border-radius:999px;
+    font-size:0.88rem; font-weight:600; cursor:pointer;
+    transition:all .15s ease; white-space:nowrap;
+  }
+  .chip:hover{ border-color:var(--accent); color:var(--accent-ink); }
+  .chip.active{
+    background:var(--ink); border-color:var(--ink); color:#fff;
+  }
+
+  /* ============ grid ============ */
+  .grid-wrap{ max-width:1180px; margin:0 auto; padding:0 24px 80px; }
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:20px;
+  }
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    overflow:hidden; cursor:pointer; text-align:left;
+    display:flex; flex-direction:column;
+    box-shadow:var(--shadow-sm);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    padding:0;
+  }
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow-md);
+    border-color:#dccabb;
+  }
+  .card:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  .card-art{
+    aspect-ratio:4/3; position:relative; overflow:hidden;
+  }
+  .card-art svg{ width:100%; height:100%; }
+  .card-diff{
+    position:absolute; top:10px; right:10px;
+    background:rgba(255,255,255,0.88); backdrop-filter:blur(4px);
+    color:var(--ink); font-size:0.68rem; font-weight:700;
+    padding:4px 9px; border-radius:999px; letter-spacing:0.02em;
+  }
+  .card-body{ padding:16px 18px 18px; display:flex; flex-direction:column; gap:7px; flex:1; }
+  .card-cat{
+    font-size:0.72rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--accent);
+  }
+  .card-name{
+    font-family:var(--font-display); font-size:1.12rem; font-weight:600;
+    line-height:1.25; margin:0; letter-spacing:-0.01em;
+  }
+  .card-meta{
+    display:flex; gap:12px; margin-top:auto; padding-top:8px;
+    font-size:0.78rem; color:var(--ink-soft); font-weight:500;
+  }
+  .card-meta span{ display:flex; align-items:center; gap:4px; }
+  .card-meta svg{ width:13px; height:13px; opacity:0.7; }
+
+  .empty-state{
+    text-align:center; padding:80px 20px; color:var(--ink-soft);
+  }
+  .empty-state h3{ font-family:var(--font-display); color:var(--ink); font-size:1.4rem; margin:0 0 8px;}
+
+  /* ============ detail overlay ============ */
+  .overlay{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(32,24,18,0.55);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:28px 16px; overflow-y:auto;
+    -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+  }
+  .overlay.open{ display:flex; }
+  .detail{
+    background:var(--surface); border-radius:24px; max-width:760px; width:100%;
+    box-shadow:var(--shadow-lg); overflow:hidden; margin:24px auto;
+    animation:riseIn .22s ease;
+  }
+  @keyframes riseIn{ from{ opacity:0; transform:translateY(14px) scale(0.98);} to{opacity:1; transform:none;} }
+  .detail-hero{ position:relative; aspect-ratio:16/7; }
+  .detail-hero svg{ width:100%; height:100%; }
+  .detail-close{
+    position:absolute; top:16px; right:16px;
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,0.92); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow-sm);
+  }
+  .detail-close svg{ width:18px; height:18px; }
+  .detail-body{ padding:28px 32px 36px; }
+  .detail-cat{
+    font-size:0.76rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.07em; color:var(--accent); margin-bottom:8px;
+  }
+  .detail-title{
+    font-family:var(--font-display); font-size:clamp(1.6rem,3.4vw,2.1rem);
+    font-weight:700; letter-spacing:-0.02em; margin:0 0 16px; text-wrap:balance;
+  }
+  .detail-meta{
+    display:flex; gap:22px; flex-wrap:wrap; padding:16px 0; margin-bottom:22px;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .meta-item{ display:flex; flex-direction:column; gap:3px; }
+  .meta-item .label{ font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); font-weight:700; }
+  .meta-item .value{ font-size:0.95rem; font-weight:600; display:flex; align-items:center; gap:6px; }
+  .meta-item svg{ width:15px; height:15px; color:var(--accent); }
+
+  .detail-cols{ display:grid; grid-template-columns: 1fr 1.5fr; gap:34px; }
+  @media (max-width: 620px){ .detail-cols{ grid-template-columns:1fr; } .detail-body{ padding:24px 20px 30px; } }
+
+  .section-h{
+    font-family:var(--font-display); font-size:1.08rem; font-weight:600;
+    margin:0 0 14px; display:flex; align-items:center; gap:8px;
+  }
+  .section-h svg{ width:17px; height:17px; color:var(--accent); }
+
+  .ing-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .ing-list li{
+    display:flex; justify-content:space-between; gap:10px;
+    font-size:0.92rem; padding-bottom:10px; border-bottom:1px dashed var(--line);
+    line-height:1.4;
+  }
+  .ing-list li:last-child{ border-bottom:none; }
+  .ing-name{ color:var(--ink); }
+  .ing-amt{ color:var(--ink-soft); font-weight:600; white-space:nowrap; flex-shrink:0; }
+
+  .steps-list{ list-style:none; margin:0; padding:0; counter-reset:step; display:flex; flex-direction:column; gap:16px; }
+  .steps-list li{
+    counter-increment:step; display:flex; gap:14px; font-size:0.94rem; line-height:1.55;
+  }
+  .steps-list li::before{
+    content: counter(step);
+    flex-shrink:0; width:26px; height:26px; border-radius:50%;
+    background:var(--accent-soft); color:var(--accent-ink); font-weight:700; font-size:0.8rem;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+
+  .tip-box{
+    margin-top:24px; background:var(--surface-2); border-radius:var(--radius-md);
+    padding:16px 18px; font-size:0.9rem; display:flex; gap:10px; align-items:flex-start;
+    line-height:1.5; color:var(--ink);
+  }
+  .tip-box svg{ width:18px; height:18px; color:var(--gold); flex-shrink:0; margin-top:1px; }
+  .tip-box b{ color:var(--accent-ink); }
+
+  .save-btn{
+    margin-top:22px; display:inline-flex; align-items:center; gap:8px;
+    background:var(--ink); color:#fff; border:none; padding:11px 20px;
+    border-radius:999px; font-size:0.88rem; font-weight:600; cursor:pointer;
+    transition:background .15s;
+  }
+  .save-btn svg{ width:16px; height:16px; }
+  .save-btn:hover{ background:#000; }
+  .save-btn.saved{ background:var(--accent); }
+
+  /* ============ footer ============ */
+  .footer{
+    padding:36px 24px 44px; color:var(--ink-soft); font-size:0.85rem; border-top:1px solid var(--line);
+  }
+  .footer-inner{ max-width:1180px; margin:0 auto; display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center; }
+  .footer-brand{ font-weight:700; color:var(--ink); }
+  .footer-links{ display:flex; gap:18px; flex-wrap:wrap; justify-content:center; align-items:center; }
+  .footer-links a{ text-decoration:none; color:var(--ink-soft); font-weight:600; font-size:0.84rem; }
+  .footer-links a:hover{ color:var(--accent-ink); text-decoration:underline; }
+  .footer-cookie-btn{
+    background:none; border:none; color:var(--ink-soft); font-weight:600; font-size:0.84rem;
+    cursor:pointer; padding:0; text-decoration:underline; text-underline-offset:2px;
+  }
+  .footer-cookie-btn:hover{ color:var(--accent-ink); }
+  .footer-fine-print{ max-width:70ch; line-height:1.6; margin:0; }
+
+  /* ============ legal pages (rendered inside the overlay/detail card) ============ */
+  .legal-body h2{ font-family:var(--font-display); font-size:1.5rem; margin:0 0 4px; }
+  .legal-updated{ color:var(--ink-soft); font-size:0.82rem; margin:0 0 24px; }
+  .legal-body h3{ font-family:var(--font-display); font-size:1.08rem; margin:28px 0 10px; }
+  .legal-body p{ line-height:1.65; font-size:0.94rem; margin:0 0 12px; }
+  .legal-body ul{ line-height:1.65; font-size:0.94rem; padding-left:20px; margin:0 0 12px; }
+  .legal-body li{ margin-bottom:6px; }
+  .legal-body table{ width:100%; border-collapse:collapse; font-size:0.86rem; margin:14px 0 20px; }
+  .legal-body th, .legal-body td{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .legal-body th{ font-size:0.74rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); }
+  .legal-body .placeholder{ background:var(--accent-soft); color:var(--accent-ink); padding:1px 6px; border-radius:5px; font-size:0.87em; }
+  .legal-note{
+    margin-top:22px; background:var(--surface-2); border-radius:var(--radius-md); padding:14px 16px;
+    font-size:0.86rem; line-height:1.55; color:var(--ink);
+  }
+
+  /* ============ consent banner ============ */
+  .consent-banner{
+    position:fixed; left:0; right:0; bottom:0; z-index:200;
+    background:var(--surface); border-top:1px solid var(--line);
+    box-shadow:0 -12px 32px -16px rgba(44,36,32,0.25);
+  }
+  .consent-inner{
+    max-width:1180px; margin:0 auto; padding:18px 24px; display:flex; gap:22px; align-items:center; flex-wrap:wrap;
+  }
+  .consent-text{ flex:1 1 420px; font-size:0.86rem; line-height:1.55; color:var(--ink); margin:0; }
+  .consent-text a{ color:var(--accent-ink); font-weight:600; }
+  .consent-actions{ display:flex; gap:10px; flex-wrap:wrap; flex-shrink:0; }
+  .consent-btn{
+    border-radius:999px; padding:10px 18px; font-size:0.85rem; font-weight:700; cursor:pointer; white-space:nowrap;
+    border:1px solid transparent; transition:all .15s ease;
+  }
+  .consent-btn.solid{ background:var(--ink); color:#fff; }
+  .consent-btn.solid:hover{ background:#000; }
+  .consent-btn.outline{ background:var(--surface); color:var(--ink); border-color:var(--line); }
+  .consent-btn.outline:hover{ border-color:var(--ink); }
+  .consent-btn.ghost{ background:none; color:var(--ink-soft); text-decoration:underline; text-underline-offset:2px; }
+
+  /* ============ consent preferences modal ============ */
+  .consent-modal-overlay{
+    display:none; position:fixed; inset:0; z-index:210; background:rgba(32,24,18,0.55);
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .consent-modal-overlay.open{ display:flex; }
+  .consent-modal{
+    background:var(--surface); border-radius:20px; max-width:520px; width:100%;
+    padding:28px; box-shadow:var(--shadow-lg); max-height:86vh; overflow-y:auto;
+  }
+  .consent-modal h3{ font-family:var(--font-display); font-size:1.3rem; margin:0 0 10px; }
+  .consent-modal-intro{ font-size:0.88rem; color:var(--ink-soft); line-height:1.55; margin:0 0 20px; }
+  .consent-row{
+    display:flex; gap:16px; align-items:flex-start; justify-content:space-between;
+    padding:14px 0; border-top:1px solid var(--line);
+  }
+  .consent-row-title{ font-weight:700; font-size:0.92rem; margin-bottom:3px; }
+  .consent-row-desc{ font-size:0.82rem; color:var(--ink-soft); line-height:1.5; }
+  .consent-row-desc a{ color:var(--accent-ink); font-weight:600; }
+  .consent-modal-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:22px; flex-wrap:wrap; }
+
+  .switch{ position:relative; display:inline-block; width:42px; height:24px; flex-shrink:0; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .switch .slider{
+    position:absolute; cursor:pointer; inset:0; background:#d8cabb; border-radius:999px; transition:.15s;
+  }
+  .switch .slider::before{
+    content:""; position:absolute; height:18px; width:18px; left:3px; top:3px;
+    background:#fff; border-radius:50%; transition:.15s;
+  }
+  .switch input:checked + .slider{ background:var(--accent); }
+  .switch input:checked + .slider::before{ transform:translateX(18px); }
+  .switch.disabled .slider{ opacity:0.6; cursor:not-allowed; }
+
+  @media (max-width: 480px){
+    .topbar-inner{ gap:12px; }
+    .count-pill{ display:none; }
+    .consent-inner{ flex-direction:column; align-items:stretch; }
+    .consent-actions{ justify-content:stretch; }
+    .consent-actions .consent-btn{ flex:1; text-align:center; }
+    .footer-links{ flex-direction:column; gap:10px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1.5 2 1.5 4 0 6-1.5-2-1.5-4 0-6Z"/><path d="M4 11c0-1.5 1.5-3 3.5-3S11 9.5 11 11h-7Z"/><path d="M13 11c0-1.5 1.5-3 3.5-3S20 9.5 20 11h-7Z"/><path d="M3 11h18l-1.2 8.4a2 2 0 0 1-2 1.6H6.2a2 2 0 0 1-2-1.6L3 11Z"/></svg>
+      </span>
+      The Sweet Index
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="Search desserts, e.g. “lemon”, “chocolate”, “no-bake”…" autocomplete="off">
+    </div>
+    <div class="count-pill" id="countPill">133 recipes</div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Every dessert worth <em>baking</em>, in one place.</h1>
+  <p>A searchable library of 100+ desserts — cakes, cookies, pies, pastries and more — each with a full step-by-step guide and exact ingredient list. Pick a category or search for something sweet.</p>
+</section>
+
+<nav class="chips" id="chips"></nav>
+
+<main class="grid-wrap">
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <h3>No desserts match that search</h3>
+    <p>Try a different word, or clear the filter to see all 133 recipes.</p>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">The Sweet Index — 133 desserts and counting.</div>
+    <nav class="footer-links" aria-label="Legal and site information">
+      <a href="#about" data-legal="about">About &amp; Contact</a>
+      <a href="#privacy" data-legal="privacy">Privacy Policy</a>
+      <a href="#cookies" data-legal="cookies">Cookie Policy</a>
+      <a href="#terms" data-legal="terms">Terms of Use</a>
+      <button type="button" id="footerManageCookies" class="footer-cookie-btn">Manage Cookie Settings</button>
+    </nav>
+    <p class="footer-fine-print">Baking times and temperatures are a guide only — ovens vary, so check a few minutes early. Always check ingredient labels for allergens before serving. This site may display advertising served by Google and other third-party partners; see our Cookie Policy for details.</p>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="detail" id="detailCard"></div>
+</div>
+
+<!-- Cookie consent banner (GDPR / UK GDPR style notice-and-choice banner) -->
+<div class="consent-banner" id="consentBanner" role="dialog" aria-label="Cookie consent" aria-live="polite" style="display:none;">
+  <div class="consent-inner">
+    <p class="consent-text">
+      We use cookies and similar technologies to run this site, remember your favourites, and — where you agree — to measure traffic and show personalised ads from Google and other partners. You can accept everything, reject anything non-essential, or choose exactly what to allow. See our <a href="#cookies" data-legal="cookies">Cookie Policy</a> for full details.
+    </p>
+    <div class="consent-actions">
+      <button type="button" class="consent-btn ghost" id="consentManage">Manage preferences</button>
+      <button type="button" class="consent-btn outline" id="consentReject">Reject non-essential</button>
+      <button type="button" class="consent-btn solid" id="consentAccept">Accept all</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cookie preferences modal -->
+<div class="consent-modal-overlay" id="consentModalOverlay">
+  <div class="consent-modal" role="dialog" aria-label="Cookie preferences">
+    <h3>Cookie preferences</h3>
+    <p class="consent-modal-intro">Choose which categories of cookies and similar technologies we're allowed to use. You can change this at any time from the "Manage Cookie Settings" link in the footer.</p>
+
+    <div class="consent-row">
+      <div>
+        <div class="consent-row-title">Strictly necessary</div>
+        <div class="consent-row-desc">Required for the site to function — e.g. remembering this consent choice. Cannot be switched off.</div>
+      </div>
+      <label class="switch disabled"><input type="checkbox" checked disabled><span class="slider"></span></label>
+    </div>
+
+    <div class="consent-row">
+      <div>
+        <div class="consent-row-title">Preferences</div>
+        <div class="consent-row-desc">Remembers your saved favourite recipes on this device using local browser storage.</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="prefPreferences" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="consent-row">
+      <div>
+        <div class="consent-row-title">Analytics</div>
+        <div class="consent-row-desc">Helps us understand how the site is used, so we can improve it. No data is sold.</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="prefAnalytics" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="consent-row">
+      <div>
+        <div class="consent-row-title">Advertising</div>
+        <div class="consent-row-desc">Allows Google and advertising partners to show ads, which may be personalised based on your activity. See our <a href="#cookies" data-legal="cookies">Cookie Policy</a> for the specific partners and cookies used.</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="prefAdvertising" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="consent-modal-actions">
+      <button type="button" class="consent-btn outline" id="consentModalRejectAll">Reject all non-essential</button>
+      <button type="button" class="consent-btn solid" id="consentModalSave">Save preferences</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function uid(){ return 'c'+Math.random().toString(36).slice(2,9); }
+
+// topping overlays — small decorative garnish groups layered on top of each dessert,
+// drawn generically so they can sit on any base shape
+const TOPPINGS = {
+  none: ()=>``,
+  sprinkles: ()=>{
+    const cols = ['#e8607a','#6fb0d9','#f0d94a','#7ad48a','#c88ad9','#ff9f5c'];
+    let s='';
+    for(let i=0;i<14;i++){
+      const x = 62 + (i*53)%96 + (i%3)*6;
+      const y = 30 + (i*29)%34;
+      const rot = (i*47)%360;
+      s += `<rect x="${x}" y="${y}" width="7" height="2.6" rx="1.3" fill="${cols[i%cols.length]}" transform="rotate(${rot} ${x+3.5} ${y+1.3})"/>`;
+    }
+    return s;
+  },
+  berries: ()=>`
+    <ellipse cx="86" cy="36" rx="7" ry="6.5" fill="#9c1f2e"/><ellipse cx="86" cy="33" rx="3" ry="2" fill="#c6485a" opacity="0.8"/>
+    <ellipse cx="108" cy="30" rx="6" ry="5.5" fill="#b23a56"/><ellipse cx="108" cy="27" rx="2.5" ry="1.8" fill="#d9697f" opacity="0.8"/>
+    <ellipse cx="120" cy="40" rx="5.5" ry="5" fill="#9c1f2e"/>
+    <path d="M85 29 q1 -4 4 -4" stroke="#5a8a4a" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  nuts: ()=>`
+    <ellipse cx="82" cy="38" rx="7" ry="4.5" fill="#8a5a2e" transform="rotate(-15 82 38)"/>
+    <ellipse cx="102" cy="30" rx="6.5" ry="4.2" fill="#a9754f" transform="rotate(10 102 30)"/>
+    <ellipse cx="118" cy="42" rx="7" ry="4.5" fill="#8a5a2e" transform="rotate(-25 118 42)"/>
+    <ellipse cx="94" cy="46" rx="6" ry="4" fill="#a9754f" transform="rotate(20 94 46)"/>`,
+  chocDrizzle: ()=>`
+    <path d="M58 32 Q 75 44 92 30 T 126 32 T 144 30" stroke="#3f2414" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.85"/>
+    <path d="M64 42 Q 80 52 98 40 T 134 42" stroke="#3f2414" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>`,
+  caramelDrizzle: ()=>`
+    <path d="M58 32 Q 75 44 92 30 T 126 32 T 144 30" stroke="#b3762f" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <path d="M64 42 Q 80 52 98 40 T 134 42" stroke="#d9a052" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>`,
+  citrusZest: ()=>`
+    <path d="M80 32 q 10 -10 4 -18" stroke="#e8c23a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M104 28 q 8 -9 2 -16" stroke="#f0d34a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M122 36 q 9 -8 4 -16" stroke="#e8c23a" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+  coconut: ()=>{
+    let s='';
+    for(let i=0;i<10;i++){
+      const x = 66 + (i*47)%110;
+      const y = 28 + (i*23)%28;
+      s += `<path d="M${x} ${y} l 6 -1 l -2 5 z" fill="#fdfaf2" stroke="#e8ddc8" stroke-width="0.6"/>`;
+    }
+    return s;
+  }
+};
+
+function wrap(bg1,bg2,inner,topping){
+  const id = uid();
+  return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${bg1}"/><stop offset="1" stop-color="${bg2}"/></linearGradient></defs>
+    <rect width="200" height="150" fill="url(#${id})"/>
+    ${inner}
+    ${TOPPINGS[topping] ? TOPPINGS[topping]() : ''}
+  </svg>`;
+}
+
+const ICONS = {
+  cake: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<g transform="translate(40,38)"><rect x="0" y="48" width="120" height="38" rx="4" fill="${light}" opacity="0.95"/><rect x="8" y="24" width="104" height="30" rx="4" fill="${light}" opacity="0.98"/><rect x="18" y="4" width="84" height="24" rx="4" fill="#fffaf4"/><circle cx="35" cy="-4" r="6" fill="#e8b4a0"/><rect x="33" y="-14" width="4" height="14" fill="#d98c3f"/><circle cx="60" cy="-6" r="6" fill="#e8b4a0"/><rect x="58" y="-16" width="4" height="14" fill="#d98c3f"/><circle cx="85" cy="-4" r="6" fill="#e8b4a0"/><rect x="83" y="-14" width="4" height="14" fill="#d98c3f"/><path d="M0 48 Q 15 40 30 48 T 60 48 T 90 48 T 120 48" fill="none" stroke="${main}" stroke-width="3" opacity="0.5"/></g>`, topping),
+  cupcake: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<g transform="translate(66,30)"><path d="M10 56 L 58 56 L 52 92 Q 34 100 16 92 Z" fill="#8a5a3c"/><path d="M14 56 L 54 56 L 50 84 Q 34 90 18 84 Z" fill="#a9754f"/><path d="M34 54 Q -6 54 2 30 Q 6 10 34 14 Q 62 10 66 30 Q 74 54 34 54 Z" fill="${light}"/><path d="M34 14 Q 14 16 10 30" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.5"/><circle cx="34" cy="6" r="6" fill="${main}"/></g>`, topping),
+  cookie: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<circle cx="100" cy="75" r="46" fill="#c88a4f"/><circle cx="100" cy="75" r="46" fill="${light}" opacity="0.35"/><circle cx="80" cy="58" r="6" fill="${main}"/><circle cx="118" cy="64" r="5" fill="${main}"/><circle cx="92" cy="86" r="5.5" fill="${main}"/><circle cx="120" cy="92" r="6" fill="${main}"/><circle cx="76" cy="90" r="4.5" fill="${main}"/><circle cx="108" cy="54" r="4" fill="${main}"/>`, topping),
+  brownie: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<rect x="54" y="42" width="92" height="66" rx="6" fill="#5c3a28"/><rect x="54" y="42" width="92" height="14" rx="6" fill="${light}" opacity="0.7"/><rect x="70" y="64" width="10" height="10" fill="${main}" opacity="0.7"/><rect x="100" y="78" width="8" height="8" fill="${main}" opacity="0.7"/><rect x="120" y="60" width="9" height="9" fill="${main}" opacity="0.7"/>`, topping),
+  pie: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<path d="M30 110 Q 100 125 170 110 L 160 100 Q 100 112 40 100 Z" fill="#c98a3f"/><path d="M34 100 Q 100 115 166 100 Q 150 55 100 50 Q 50 55 34 100 Z" fill="#e3a85c"/><path d="M78 78 Q 100 68 122 78 L 118 98 Q 100 104 82 98 Z" fill="${main}" opacity="0.85"/><path d="M60 62 Q 100 50 140 62" fill="none" stroke="#c98a3f" stroke-width="4" stroke-linecap="round"/><path d="M50 80 Q 100 66 150 80" fill="none" stroke="#c98a3f" stroke-width="4" stroke-linecap="round"/>`, topping),
+  pudding: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<path d="M68 44 L 132 44 L 124 110 Q 100 120 76 110 Z" fill="${main}" opacity="0.92"/><ellipse cx="100" cy="44" rx="32" ry="9" fill="${light}"/><path d="M78 60 Q 100 70 122 60" stroke="#6b4228" stroke-width="3" fill="none" opacity="0.35"/>`, topping),
+  ricepudding: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`
+    <path d="M52 62 Q52 100 100 104 Q148 100 148 62 L148 54 L52 54 Z" fill="#e8dcc8"/>
+    <path d="M56 60 Q56 94 100 98 Q144 94 144 60 Z" fill="${light}" opacity="0.9"/>
+    <ellipse cx="100" cy="56" rx="48" ry="9" fill="${main}" opacity="0.85"/>
+    <ellipse cx="78" cy="54" rx="3.2" ry="2" fill="#fffaf2"/><ellipse cx="88" cy="51" rx="3.2" ry="2" fill="#fffaf2" transform="rotate(20 88 51)"/>
+    <ellipse cx="98" cy="55" rx="3.2" ry="2" fill="#fffaf2" transform="rotate(-10 98 55)"/><ellipse cx="110" cy="52" rx="3.2" ry="2" fill="#fffaf2" transform="rotate(15 110 52)"/>
+    <ellipse cx="120" cy="56" rx="3.2" ry="2" fill="#fffaf2" transform="rotate(-20 120 56)"/><ellipse cx="68" cy="58" rx="3.2" ry="2" fill="#fffaf2" transform="rotate(10 68 58)"/>
+    <path d="M60 46 Q100 38 140 46" stroke="#b08a52" stroke-width="2.5" fill="none" opacity="0.55" stroke-dasharray="1.5 4" stroke-linecap="round"/>
+  `, topping),
+  icecream: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<circle cx="100" cy="48" r="26" fill="${light}"/><circle cx="100" cy="46" r="26" fill="${main}" opacity="0.35"/><path d="M78 62 L 122 62 L 102 118 Z" fill="#d9a441"/><path d="M82 70 L 118 70" stroke="#b9842b" stroke-width="2"/><path d="M86 86 L 114 86" stroke="#b9842b" stroke-width="2"/>`, topping),
+  pastry: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<path d="M46 92 Q 70 40 100 92 Q 130 40 154 92 Q 120 112 100 92 Q 80 112 46 92 Z" fill="#e8ad5c"/><path d="M60 82 Q 78 55 100 80" stroke="${main}" stroke-width="3" fill="none" opacity="0.6"/><path d="M140 82 Q 122 55 100 80" stroke="${main}" stroke-width="3" fill="none" opacity="0.6"/>`, topping),
+  donut: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<circle cx="100" cy="75" r="44" fill="#d9975c"/><circle cx="100" cy="72" r="40" fill="${main}"/><circle cx="100" cy="72" r="16" fill="${bg1}"/><circle cx="82" cy="58" r="3" fill="${light}"/><circle cx="118" cy="60" r="3" fill="${light}"/><circle cx="95" cy="48" r="3" fill="${light}"/><circle cx="110" cy="90" r="3" fill="${light}"/><circle cx="75" cy="80" r="3" fill="${light}"/>`, topping),
+  global: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`<rect x="60" y="54" width="80" height="50" rx="8" fill="${light}"/><rect x="60" y="54" width="80" height="14" rx="8" fill="${main}" opacity="0.5"/><circle cx="80" cy="86" r="6" fill="${main}"/><circle cx="100" cy="90" r="6" fill="#d9a441"/><circle cx="120" cy="84" r="6" fill="#8a5a3c"/>`, topping),
+  crumble: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`
+    <path d="M48 66 Q48 102 100 106 Q152 102 152 66 L152 56 L48 56 Z" fill="#e3c08a"/>
+    <path d="M52 64 Q52 96 100 100 Q148 96 148 64 Z" fill="#c6a06a" opacity="0.5"/>
+    <ellipse cx="100" cy="58" rx="52" ry="10" fill="${main}" opacity="0.9"/>
+    <ellipse cx="100" cy="55" rx="52" ry="9" fill="${light}" opacity="0.95"/>
+    <circle cx="74" cy="51" r="4.5" fill="#c6935c"/><circle cx="89" cy="47" r="3.5" fill="#d9ab6e"/>
+    <circle cx="104" cy="52" r="5" fill="#c6935c"/><circle cx="118" cy="46" r="3.5" fill="#d9ab6e"/>
+    <circle cx="130" cy="53" r="4" fill="#c6935c"/><circle cx="64" cy="46" r="3" fill="#d9ab6e"/>
+    <circle cx="112" cy="59" r="3" fill="#c6935c"/><circle cx="82" cy="59" r="3" fill="#d9ab6e"/>
+  `, topping),
+  christmas: (bg1,bg2,main,light,topping)=>wrap(bg1,bg2,`
+    <ellipse cx="100" cy="106" rx="56" ry="10" fill="#c98a3f" opacity="0.5"/>
+    <path d="M56 100 Q50 60 100 44 Q150 60 144 100 Q122 112 100 112 Q78 112 56 100 Z" fill="${main}"/>
+    <path d="M60 96 Q 56 62 100 48" stroke="${light}" stroke-width="3" fill="none" opacity="0.4" stroke-linecap="round"/>
+    <path d="M58 76 Q100 86 142 76" fill="#fffaf4" opacity="0.92"/>
+    <path d="M58 76 Q100 68 142 76 Q145 80 142 84 Q100 94 58 84 Q55 80 58 76 Z" fill="#fffaf4"/>
+    <g transform="translate(100,50)">
+      <path d="M0 0 Q-10 -14 -2 -24 Q4 -14 0 0 Z" fill="#4a7a4a"/>
+      <path d="M0 0 Q10 -14 2 -24 Q-4 -14 0 0 Z" fill="#5a8a5a"/>
+      <circle cx="-5" cy="-6" r="3" fill="#b3243f"/><circle cx="5" cy="-8" r="3" fill="#c23b4a"/><circle cx="0" cy="-2" r="3" fill="#b3243f"/>
+    </g>
+    <circle cx="72" cy="58" r="2" fill="#ffffff" opacity="0.9"/><circle cx="128" cy="60" r="2.2" fill="#ffffff" opacity="0.9"/>
+    <circle cx="86" cy="50" r="1.6" fill="#ffffff" opacity="0.9"/><circle cx="116" cy="52" r="1.8" fill="#ffffff" opacity="0.9"/>
+  `, topping)
+};
+
+const CLOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`;
+const USERS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+const BARS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="4" y2="14"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="20" y1="20" x2="20" y2="4"/></svg>`;
+const BASKET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h14l-1.5 9.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 10Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg>`;
+const LIST = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>`;
+const BULB = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2Z"/></svg>`;
+const CLOSE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const HEART = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>`;
+
+let RECIPES = [];
+let activeCategory = "All";
+let saved = new Set(JSON.parse(localStorage.getItem('sweetindex_saved') || '[]'));
+
+const grid = document.getElementById('grid');
+const chipsEl = document.getElementById('chips');
+const searchInput = document.getElementById('searchInput');
+const countPill = document.getElementById('countPill');
+const emptyState = document.getElementById('emptyState');
+const overlay = document.getElementById('overlay');
+const detailCard = document.getElementById('detailCard');
+
+const PHOTOS = {
+  cake:'images/cakes.jpg', cupcake:'images/cupcakes.jpg', cookie:'images/cookies.jpg',
+  brownie:'images/brownies.jpg', pie:'images/pies.jpg', crumble:'images/crumbles.jpg',
+  pudding:'images/puddings.jpg', ricepudding:'images/ricepudding.jpg', icecream:'images/icecream.jpg',
+  pastry:'images/pastries.jpg', donut:'images/donuts.jpg', global:'images/global.jpg',
+  christmas:'images/christmas.jpg'
+};
+
+function illustration(r){
+  const fn = ICONS[r.icon] || ICONS.cake;
+  return fn(r.gradient[0], r.gradient[1], r.mainColor || '#8a5a3c', r.lightColor || '#fff8f0', r.topping || 'none');
+}
+
+function onPhotoError(imgEl, id){
+  const r = RECIPES.find(x=>x.id===id);
+  if(!r) return;
+  const stage = imgEl.dataset.fallbackStage || '0';
+  if(stage === '0'){
+    // individual recipe photo failed to load -> try the shared category photo
+    imgEl.dataset.fallbackStage = '1';
+    imgEl.src = PHOTOS[r.icon] || PHOTOS.cake;
+  } else {
+    // category photo also failed -> fall back to the generated illustration
+    imgEl.outerHTML = illustration(r);
+  }
+}
+window.onPhotoError = onPhotoError;
+
+function cardArt(r){
+  const photo = `images/recipes/${r.id}.jpg`;
+  const alt = String(r.name).replace(/"/g,'&quot;');
+  const fallbackGradient = `linear-gradient(135deg, ${r.gradient[0]}, ${r.gradient[1]})`;
+  return `<img src="${photo}" alt="${alt}" loading="lazy" decoding="async" data-fallback-stage="0"
+      style="width:100%;height:100%;object-fit:cover;display:block;background:${fallbackGradient}"
+      onerror="onPhotoError(this, ${JSON.stringify(r.id)})">`;
+}
+
+function render(){
+  const q = searchInput.value.trim().toLowerCase();
+  const filtered = RECIPES.filter(r=>{
+    const catOk = activeCategory === "All" || r.category === activeCategory;
+    if(!catOk) return false;
+    if(!q) return true;
+    const hay = (r.name + " " + r.category + " " + r.ingredients.map(i=>i.item).join(" ")).toLowerCase();
+    return hay.includes(q);
+  });
+  countPill.textContent = `${filtered.length} recipe${filtered.length===1?'':'s'}`;
+  grid.innerHTML = '';
+  emptyState.style.display = filtered.length ? 'none' : 'block';
+  const frag = document.createDocumentFragment();
+  filtered.forEach(r=>{
+    const card = document.createElement('button');
+    card.className = 'card';
+    card.setAttribute('aria-label', 'View recipe: ' + r.name);
+    card.innerHTML = `
+      <div class="card-art">${cardArt(r)}<span class="card-diff">${r.difficulty}</span></div>
+      <div class="card-body">
+        <span class="card-cat">${r.category}</span>
+        <h3 class="card-name">${r.name}</h3>
+        <div class="card-meta">
+          <span>${CLOCK} ${r.time}</span>
+          <span>${USERS} ${r.servings}</span>
+        </div>
+      </div>`;
+    card.addEventListener('click', ()=>openDetail(r.id));
+    frag.appendChild(card);
+  });
+  grid.appendChild(frag);
+}
+
+function buildChips(){
+  const cats = ["All", ...Array.from(new Set(RECIPES.map(r=>r.category)))];
+  chipsEl.innerHTML = '';
+  cats.forEach(c=>{
+    const b = document.createElement('button');
+    b.className = 'chip' + (c===activeCategory ? ' active' : '');
+    b.textContent = c;
+    b.addEventListener('click', ()=>{
+      activeCategory = c;
+      document.querySelectorAll('.chip').forEach(el=>el.classList.remove('active'));
+      b.classList.add('active');
+      render();
+    });
+    chipsEl.appendChild(b);
+  });
+  const footerBrand = document.querySelector('.footer-brand');
+  if(footerBrand){ footerBrand.textContent = `The Sweet Index — ${RECIPES.length} desserts and counting.`; }
+}
+
+function openDetail(id){
+  const r = RECIPES.find(x=>x.id===id);
+  if(!r) return;
+  const isSaved = saved.has(r.id);
+  detailCard.innerHTML = `
+    <div class="detail-hero">
+      ${cardArt(r)}
+      <button class="detail-close" aria-label="Close">${CLOSE}</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-cat">${r.category}</div>
+      <h2 class="detail-title">${r.name}</h2>
+      <div class="detail-meta">
+        <div class="meta-item"><span class="label">Time</span><span class="value">${CLOCK}${r.time}</span></div>
+        <div class="meta-item"><span class="label">Serves</span><span class="value">${USERS}${r.servings}</span></div>
+        <div class="meta-item"><span class="label">Difficulty</span><span class="value">${BARS}${r.difficulty}</span></div>
+      </div>
+      <div class="detail-cols">
+        <div>
+          <h3 class="section-h">${BASKET} Ingredients</h3>
+          <ul class="ing-list">
+            ${r.ingredients.map(i=>`<li><span class="ing-name">${i.item}</span><span class="ing-amt">${i.amount}</span></li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <h3 class="section-h">${LIST} Method</h3>
+          <ol class="steps-list">
+            ${r.steps.map(s=>`<li>${s}</li>`).join('')}
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">${BULB}<div><b>Baker's tip —</b> ${r.tip}</div></div>
+      <button class="save-btn ${isSaved?'saved':''}" id="saveBtn">${HEART} ${isSaved ? 'Saved to favourites' : 'Save to favourites'}</button>
+    </div>
+  `;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  detailCard.querySelector('.detail-close').addEventListener('click', closeDetail);
+  const saveBtn = detailCard.querySelector('#saveBtn');
+  saveBtn.addEventListener('click', ()=>{
+    // Favourites use non-essential ("Preferences") local storage, so under
+    // GDPR/PECR we only persist it once the visitor has consented to that
+    // category — if not, we prompt them to choose rather than storing silently.
+    const consent = getConsent();
+    if(!consent || !consent.preferences){
+      openConsentModal();
+      return;
+    }
+    if(saved.has(r.id)){ saved.delete(r.id); saveBtn.classList.remove('saved'); saveBtn.innerHTML = HEART + ' Save to favourites'; }
+    else { saved.add(r.id); saveBtn.classList.add('saved'); saveBtn.innerHTML = HEART + ' Saved to favourites'; }
+    try{ localStorage.setItem('sweetindex_saved', JSON.stringify(Array.from(saved))); }catch(e){}
+  });
+  detailCard.scrollTop = 0;
+  window.scrollTo({top:0});
+}
+
+function closeDetail(){
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  if(['about','privacy','cookies','terms'].includes((location.hash||'').replace('#',''))){
+    history.pushState('', document.title, location.pathname + location.search);
+  }
+}
+
+overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeDetail(); });
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ closeDetail(); closeConsentModal(); } });
+
+let searchTimer;
+searchInput.addEventListener('input', ()=>{
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(render, 80);
+});
+
+/* =================================================================
+   LEGAL / COMPLIANCE PAGES
+   Placeholders like [Your Business / Site Owner Name] and
+   [privacy@yoursite.com] must be filled in with your real details
+   before this site goes live or is submitted to Google AdSense —
+   AdSense requires a genuine, verifiable site identity and contact.
+   ================================================================= */
+const LEGAL = {
+  about: {
+    title: "About & Contact",
+    html: `
+      <h3>About The Sweet Index</h3>
+      <p>The Sweet Index is an independent recipe library covering more than 100 desserts, from everyday cookies and traybakes to layer cakes, pastries and no-bake treats. Every recipe includes a full ingredient list and a detailed, in-depth method, written so that a home baker can follow it from start to finish without needing to look anything up elsewhere.</p>
+      <p>This site is operated by <span class="placeholder">[Your Business / Site Owner Name]</span>, based in <span class="placeholder">[City, Country]</span>.</p>
+      <h3>Contact us</h3>
+      <p>For general enquiries, corrections to a recipe, or anything else, contact us at <span class="placeholder">[contact@yoursite.com]</span>. For privacy-related requests specifically, see the contact details in our Privacy Policy.</p>
+      <h3>Editorial approach</h3>
+      <p>Recipes and quantities are tested as standard home-kitchen formulations. Oven temperatures are given for a conventional oven — reduce by about 20°C (or around 20°F) if you're using a fan/convection oven. Always check your own ingredient labels for allergens, as brands and availability vary by region.</p>
+    `
+  },
+  privacy: {
+    title: "Privacy Policy",
+    html: `
+      <p class="legal-updated">Last updated: <span class="placeholder">[date]</span></p>
+      <p>This Privacy Policy explains how <span class="placeholder">[Your Business / Site Owner Name]</span> ("we", "us") collects, uses and protects information when you visit The Sweet Index (the "Site"). It is written to meet the requirements of the UK GDPR, the EU General Data Protection Regulation (GDPR), and the UK Privacy and Electronic Communications Regulations (PECR).</p>
+
+      <h3>1. Who we are</h3>
+      <p>We are the data controller for personal data processed through this Site. You can contact us at <span class="placeholder">[privacy@yoursite.com]</span>. If we appoint a Data Protection Officer or EU/UK representative, their details will be added here: <span class="placeholder">[DPO / representative details, if applicable]</span>.</p>
+
+      <h3>2. What information we collect</h3>
+      <ul>
+        <li><strong>Information you provide:</strong> anything you send us directly, such as an email enquiry.</li>
+        <li><strong>Automatically collected information:</strong> standard technical data such as IP address, browser type, device type, pages visited and referring pages, typically collected via server/hosting logs and, where you consent, analytics tools.</li>
+        <li><strong>Information stored on your device:</strong> this Site saves your favourited recipes locally in your browser's storage (localStorage). This stays on your device and is not transmitted to us.</li>
+        <li><strong>Advertising identifiers:</strong> where you consent to advertising cookies, Google and its advertising partners may collect identifiers (such as cookie IDs or device identifiers) to serve and measure ads. See our <a href="#cookies" data-legal="cookies">Cookie Policy</a> for details.</li>
+      </ul>
+
+      <h3>3. How we use your information</h3>
+      <ul>
+        <li>To operate, maintain and secure the Site.</li>
+        <li>To remember your cookie consent choices and site preferences.</li>
+        <li>Where you consent, to understand how the Site is used (analytics) so we can improve it.</li>
+        <li>Where you consent, to allow Google and advertising partners to show ads, including personalised ads based on your browsing activity.</li>
+        <li>To respond to enquiries you send us.</li>
+      </ul>
+
+      <h3>4. Our legal basis for processing</h3>
+      <ul>
+        <li><strong>Consent</strong> — for non-essential cookies, analytics and advertising. You can withdraw consent at any time via "Manage Cookie Settings" in the footer.</li>
+        <li><strong>Legitimate interests</strong> — for strictly necessary site functionality and basic security logging, where this does not override your fundamental rights.</li>
+        <li><strong>Legal obligation</strong> — where we must retain or disclose information to comply with the law.</li>
+      </ul>
+
+      <h3>5. Advertising and Google AdSense</h3>
+      <p>Where you consent to advertising cookies, this Site may use Google AdSense and similar third-party advertising services to display ads. Google, as a third-party vendor, uses cookies and similar technologies (including the DoubleClick DART cookie) to serve ads based on your prior visits to this Site and other sites on the internet. Google's use of advertising cookies enables it and its partners to serve ads based on your visits to this and/or other sites.</p>
+      <p>You can opt out of personalised advertising by visiting <span class="placeholder">Google Ads Settings (adssettings.google.com)</span>, or opt out of third-party vendor use of cookies more broadly via <span class="placeholder">youronlinechoices.eu</span> (EU/UK) or <span class="placeholder">aboutads.info/choices</span>.</p>
+
+      <h3>6. International data transfers</h3>
+      <p>Some of our third-party providers, including Google, may process data outside the UK or European Economic Area. Where this happens, we rely on recognised safeguards such as the European Commission's Standard Contractual Clauses or the UK's International Data Transfer Addendum.</p>
+
+      <h3>7. How long we keep information</h3>
+      <p>Consent records and preference data are kept for as long as needed to honour your choices, typically up to 12 months, after which you will be asked to confirm your preferences again. Server/hosting logs are typically retained for a short period for security purposes.</p>
+
+      <h3>8. Your rights</h3>
+      <p>Under the UK GDPR and EU GDPR, you have the right to:</p>
+      <ul>
+        <li>Access the personal data we hold about you.</li>
+        <li>Request correction of inaccurate data.</li>
+        <li>Request erasure of your data.</li>
+        <li>Restrict or object to certain processing.</li>
+        <li>Request data portability.</li>
+        <li>Withdraw consent at any time, without affecting processing carried out before withdrawal.</li>
+        <li>Lodge a complaint with a supervisory authority — in the UK, the Information Commissioner's Office (ico.org.uk); in the EU, your local data protection authority.</li>
+      </ul>
+      <p>To exercise any of these rights, contact us at <span class="placeholder">[privacy@yoursite.com]</span>.</p>
+
+      <h3>9. Children's privacy</h3>
+      <p>This Site is not directed at children, and we do not knowingly collect personal data from children.</p>
+
+      <h3>10. Changes to this policy</h3>
+      <p>We may update this policy from time to time. The "last updated" date above shows when it was last revised.</p>
+    `
+  },
+  cookies: {
+    title: "Cookie Policy",
+    html: `
+      <p class="legal-updated">Last updated: <span class="placeholder">[date]</span></p>
+      <p>Cookies are small text files placed on your device when you visit a website. We also use similar technologies, such as browser local storage. This policy explains what we use and why, in line with UK PECR and GDPR requirements for consent.</p>
+
+      <h3>Categories of cookies we use</h3>
+      <table>
+        <thead><tr><th>Category</th><th>Purpose</th><th>Can be disabled?</th></tr></thead>
+        <tbody>
+          <tr><td>Strictly necessary</td><td>Required for the Site to function, including remembering your cookie consent choice.</td><td>No — always on</td></tr>
+          <tr><td>Preferences</td><td>Remembers your saved favourite recipes on this device (stored via browser localStorage, not a traditional cookie, but disclosed here for transparency).</td><td>Yes</td></tr>
+          <tr><td>Analytics</td><td>Helps us understand aggregate usage of the Site so we can improve it.</td><td>Yes</td></tr>
+          <tr><td>Advertising</td><td>Used by Google and advertising partners to serve and measure ads, including personalised ads based on your activity across sites.</td><td>Yes</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Specific third-party cookies that may be set (once you consent to Advertising)</h3>
+      <table>
+        <thead><tr><th>Cookie</th><th>Set by</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>__gads / __gpi</td><td>Google</td><td>Ad delivery and frequency capping</td></tr>
+          <tr><td>IDE</td><td>Google / DoubleClick</td><td>Ad measurement and retargeting</td></tr>
+          <tr><td>test_cookie</td><td>Google</td><td>Checks whether the user's browser supports cookies</td></tr>
+          <tr><td>_ga / _gid</td><td>Google Analytics</td><td>Distinguishes users and sessions for analytics (Analytics category)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Managing your preferences</h3>
+      <p>You can change your cookie choices at any time using "Manage Cookie Settings" in the footer of this Site. You can also control or delete cookies through your browser settings, and manage personalised advertising directly via <span class="placeholder">Google Ads Settings (adssettings.google.com)</span> or industry opt-out pages such as <span class="placeholder">youronlinechoices.eu</span>.</p>
+
+      <h3>More information</h3>
+      <p>See our <a href="#privacy" data-legal="privacy">Privacy Policy</a> for how we handle personal data more generally.</p>
+    `
+  },
+  terms: {
+    title: "Terms of Use",
+    html: `
+      <p class="legal-updated">Last updated: <span class="placeholder">[date]</span></p>
+      <h3>1. Acceptance of these terms</h3>
+      <p>By using The Sweet Index (the "Site"), you agree to these Terms of Use. If you do not agree, please do not use the Site.</p>
+
+      <h3>2. Use of content</h3>
+      <p>Recipes, text, illustrations and other content on this Site are provided for personal, non-commercial use. You may print or save individual recipes for your own cooking. Republishing, scraping, or redistributing the Site's content in bulk, or representing it as your own, is not permitted without prior written permission from <span class="placeholder">[Your Business / Site Owner Name]</span>.</p>
+
+      <h3>3. Food safety and allergen disclaimer</h3>
+      <p>Recipes are provided for general guidance. Cooking times, oven temperatures and quantities may need adjusting for your own equipment. Always check the labels of ingredients you use for allergens, as formulations vary between brands and regions, and seek medical advice if you have specific dietary or allergy concerns.</p>
+
+      <h3>4. No warranty</h3>
+      <p>The Site and its content are provided "as is" without warranties of any kind, express or implied, to the fullest extent permitted by law.</p>
+
+      <h3>5. Limitation of liability</h3>
+      <p>To the fullest extent permitted by law, <span class="placeholder">[Your Business / Site Owner Name]</span> will not be liable for any indirect, incidental or consequential loss arising from your use of the Site or reliance on its content.</p>
+
+      <h3>6. Advertising</h3>
+      <p>This Site may display advertising served by Google AdSense and other third-party advertising networks. We do not control the specific content of individual ads. See our <a href="#cookies" data-legal="cookies">Cookie Policy</a> for how advertising cookies are used.</p>
+
+      <h3>7. Third-party links</h3>
+      <p>The Site may link to third-party websites. We are not responsible for the content or privacy practices of those sites.</p>
+
+      <h3>8. Changes</h3>
+      <p>We may update these Terms from time to time; continued use of the Site after changes means you accept the revised Terms.</p>
+
+      <h3>9. Governing law</h3>
+      <p>These Terms are governed by the laws of <span class="placeholder">[England and Wales / your jurisdiction]</span>.</p>
+
+      <h3>10. Contact</h3>
+      <p>Questions about these Terms can be sent to <span class="placeholder">[contact@yoursite.com]</span>.</p>
+    `
+  }
+};
+
+function openLegalPage(key, pushHash){
+  const page = LEGAL[key];
+  if(!page) return;
+  detailCard.innerHTML = `
+    <div class="detail-body legal-body" style="padding-top:32px;">
+      <button class="detail-close" aria-label="Close" style="position:absolute; top:16px; right:16px;">${CLOSE}</button>
+      <h2>${page.title}</h2>
+      ${page.html}
+      <div class="legal-note">This page contains placeholder fields (shown in highlighted boxes) for your real business name, contact email and jurisdiction. Fill these in with your actual details before publishing the site or applying for Google AdSense.</div>
+    </div>
+  `;
+  detailCard.style.position = 'relative';
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  detailCard.querySelector('.detail-close').addEventListener('click', closeDetail);
+  detailCard.querySelectorAll('a[data-legal]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const k = a.getAttribute('data-legal');
+      history.pushState('', document.title, location.pathname + location.search + '#' + k);
+      openLegalPage(k, false);
+    });
+  });
+  detailCard.scrollTop = 0;
+  if(pushHash !== false){ location.hash = key; }
+}
+
+document.querySelectorAll('a[data-legal]').forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    e.preventDefault();
+    openLegalPage(a.getAttribute('data-legal'));
+  });
+});
+
+function handleHashRoute(){
+  const key = (location.hash || '').replace('#','');
+  if(LEGAL[key]){ openLegalPage(key, false); }
+}
+window.addEventListener('hashchange', handleHashRoute);
+window.addEventListener('popstate', handleHashRoute);
+
+/* =================================================================
+   COOKIE CONSENT (GDPR / UK PECR style)
+   Consent is required before any non-essential cookie or script —
+   including Google AdSense's ad-serving script — may run. This
+   section stores a consent record and only "activates" ad slots
+   once advertising consent is given. See the AD SETUP note at the
+   top of this file for how to wire in real AdSense code once this
+   site is hosted on your own domain.
+   ================================================================= */
+const CONSENT_KEY = 'sweetindex_consent_v1';
+const consentBanner = document.getElementById('consentBanner');
+const consentModalOverlay = document.getElementById('consentModalOverlay');
+
+function getConsent(){
+  try{
+    const raw = localStorage.getItem(CONSENT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function setConsent(prefs){
+  const record = { ...prefs, essential:true, timestamp: new Date().toISOString() };
+  try{ localStorage.setItem(CONSENT_KEY, JSON.stringify(record)); }catch(e){}
+  applyConsent(record);
+  consentBanner.style.display = 'none';
+  closeConsentModal();
+}
+function applyConsent(record){
+  // This site currently has no ad placements. If you add advertising back
+  // in later (e.g. real AdSense code once self-hosted), gate it here on
+  // record.advertising, as PECR/GDPR require consent before non-essential
+  // cookies/scripts load.
+  // If preferences consent is withdrawn or declined, don't retain the
+  // favourites list in storage — clear it rather than keeping data
+  // without a valid consent basis.
+  if(!record || !record.preferences){
+    try{ localStorage.removeItem('sweetindex_saved'); }catch(e){}
+    if(typeof saved !== 'undefined'){ saved.clear(); }
+  }
+}
+function openConsentModal(){
+  const record = getConsent() || { preferences:true, analytics:true, advertising:true };
+  document.getElementById('prefPreferences').checked = !!record.preferences;
+  document.getElementById('prefAnalytics').checked = !!record.analytics;
+  document.getElementById('prefAdvertising').checked = !!record.advertising;
+  consentModalOverlay.classList.add('open');
+}
+function closeConsentModal(){ consentModalOverlay.classList.remove('open'); }
+
+document.getElementById('consentAccept').addEventListener('click', ()=>{
+  setConsent({ preferences:true, analytics:true, advertising:true });
+});
+document.getElementById('consentReject').addEventListener('click', ()=>{
+  setConsent({ preferences:false, analytics:false, advertising:false });
+});
+document.getElementById('consentManage').addEventListener('click', openConsentModal);
+document.getElementById('footerManageCookies').addEventListener('click', openConsentModal);
+document.getElementById('consentModalSave').addEventListener('click', ()=>{
+  setConsent({
+    preferences: document.getElementById('prefPreferences').checked,
+    analytics: document.getElementById('prefAnalytics').checked,
+    advertising: document.getElementById('prefAdvertising').checked,
+  });
+});
+document.getElementById('consentModalRejectAll').addEventListener('click', ()=>{
+  setConsent({ preferences:false, analytics:false, advertising:false });
+});
+consentModalOverlay.addEventListener('click', (e)=>{ if(e.target === consentModalOverlay) closeConsentModal(); });
+
+(function initConsent(){
+  const existing = getConsent();
+  if(existing){
+    applyConsent(existing);
+  } else {
+    // No choice recorded yet: show the banner, and default the ad slots
+    // to their "not yet consented" state until the visitor chooses.
+    applyConsent({ preferences:false, analytics:false, advertising:false });
+    consentBanner.style.display = 'block';
+  }
+})();
+
+fetch('recipes.json')
+  .then(res=>res.json())
+  .then(data=>{
+    RECIPES = data;
+    buildChips();
+    render();
+    handleHashRoute();
+  })
+  .catch(()=>{
+    grid.innerHTML = '<div class="empty-state"><h3>Could not load recipes</h3><p>Please refresh the page.</p></div>';
+  });
+</script>
+</body>
+</html>
